@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EduManage</title>
+    <link rel="stylesheet" href="css/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div id="api-diagnostic" style="position: fixed; top: 0; left: 0; right: 0; background: #fee2e2; color: #991b1b; padding: 8px; font-size: 12px; text-align: center; z-index: 9999; display: none;">
+        Backend connection failed. Checking...
+    </div>
+    <script>
+        async function checkConnection() {
+            const diag = document.getElementById('api-diagnostic');
+            try {
+                const res = await fetch('/api/quizzes');
+                if (res.ok) {
+                    console.log("Backend Connection Successful");
+                } else {
+                    diag.style.display = 'block';
+                    diag.textContent = `Backend error: ${res.status} ${res.statusText}`;
+                }
+            } catch (e) {
+                diag.style.display = 'block';
+                diag.textContent = `CRITICAL: Cannot connect to backend. Error: ${e.message}. Are you using http://localhost:8081?`;
+            }
+        }
+        checkConnection();
+    </script>
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+
+    <div class="auth-container">
+        <div class="logo-container">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h2>EduManage</h2>
+        </div>
+        <p class="subtitle">Welcome back! Please login to your account.</p>
+
+        <div id="errorMessage"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="name@example.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-primary" id="loginBtn">Sign In</button>
+        </form>
+
+        <div class="auth-links">
+            Don't have an account? <a href="register.html">Register here</a>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

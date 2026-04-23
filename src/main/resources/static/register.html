@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - EduManage</title>
+    <link rel="stylesheet" href="css/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+
+    <div class="auth-container" style="max-width: 500px;">
+        <div class="logo-container">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h2>EduManage</h2>
+        </div>
+        <p class="subtitle">Create a new student account.</p>
+
+        <div id="errorMessage"></div>
+
+        <form id="registerForm">
+            <div style="display: flex; gap: 16px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" required placeholder="John">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" required placeholder="Doe">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="name@example.com">
+            </div>
+            <div style="display: flex; gap: 16px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="rollNumber">Roll Number</label>
+                    <input type="text" id="rollNumber" required placeholder="CS24001">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" placeholder="+1 234 567 8900">
+                </div>
+            </div>
+            <div style="display: flex; gap: 16px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="enrollmentYear">Enrollment Year</label>
+                    <input type="number" id="enrollmentYear" required min="2000" max="2100" placeholder="2024">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="cgpa">Current CGPA</label>
+                    <input type="number" id="cgpa" step="0.01" min="0" max="10" placeholder="8.50">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="department">Department</label>
+                <select id="department" required>
+                    <option value="" disabled selected>Select Department</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Biology">Biology</option>
+                    <option value="Business">Business</option>
+                    <option value="Arts">Arts</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-primary" id="registerBtn">Create Account</button>
+        </form>
+
+        <div class="auth-links">
+            Already have an account? <a href="login.html">Sign in here</a>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

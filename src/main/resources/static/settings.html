@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - EduManage</title>
+    <link id="theme-style" rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <h2>EduManage</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-users"></i> Students</a>
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="quiz.html" class="nav-item"><i class="fa-solid fa-file-signature"></i> Quizzes</a>
+                <a href="settings.html" class="nav-item active"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div></div>
+                <div class="user-profile" id="userProfileDropdown">
+                    <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" id="userAvatar" alt="Profile">
+                    <span id="userNameDisplay">Loading...</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; margin-left: 4px;"></i>
+                    
+                    <div class="dropdown-menu" id="dropdownMenu" style="display: none; position: absolute; top: 60px; right: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: var(--shadow-md); padding: 8px; min-width: 150px; z-index: 100;">
+                        <button id="logoutBtn" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; cursor: pointer; color: var(--danger); font-family: inherit; font-size: 0.9rem; border-radius: 4px;">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-header">
+                <div>
+                    <h1>Account Settings</h1>
+                    <p>Manage your profile, security, and preferences.</p>
+                </div>
+            </div>
+
+            <div class="settings-container" style="padding: 0 32px; max-width: 800px;">
+                <div class="settings-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+                    <h2 style="margin-bottom: 16px; font-size: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Profile Information</h2>
+                    <form id="profileForm">
+                        <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="sFirstName">First Name</label>
+                                <input type="text" id="sFirstName" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="sLastName">Last Name</label>
+                                <input type="text" id="sLastName" required>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label for="sEmail">Email Address (Cannot be changed)</label>
+                            <input type="email" id="sEmail" disabled style="background: var(--secondary-color);">
+                        </div>
+                        <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="sPhoneNumber">Phone Number</label>
+                                <input type="tel" id="sPhoneNumber">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="sDepartment">Department</label>
+                                <select id="sDepartment" required>
+                                    <option value="Computer Science">Computer Science</option>
+                                    <option value="Mathematics">Mathematics</option>
+                                    <option value="Physics">Physics</option>
+                                    <option value="Biology">Biology</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Arts">Arts</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="updateProfileBtn">Save Profile</button>
+                    </form>
+                </div>
+
+                <div class="settings-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+                    <h2 style="margin-bottom: 16px; font-size: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Security</h2>
+                    <form id="passwordForm">
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-secondary" id="updatePasswordBtn">Update Password</button>
+                    </form>
+                </div>
+
+                <div class="settings-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+                    <h2 style="margin-bottom: 16px; font-size: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">Preferences</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="font-size: 1rem; margin-bottom: 4px;">Dark Mode</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Toggle dark appearance for the dashboard.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="darkModeToggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/settings.js"></script>
+</body>
+</html>

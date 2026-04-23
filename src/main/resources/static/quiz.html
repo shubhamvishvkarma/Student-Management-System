@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes - EduManage</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .quiz-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .quiz-card h3 {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .quiz-card p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .quiz-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .quiz-active-container {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            margin-top: 24px;
+        }
+
+        .question-container {
+            margin-bottom: 24px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .option-item {
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-item:hover {
+            background: #f8fafc;
+            border-color: var(--primary-color);
+        }
+
+        .option-item.selected {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .results-container {
+            display: none;
+            text-align: center;
+            padding: 48px;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 24px;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Leaderboard Styles */
+        .rank-badge {
+            display: inline-flex;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            color: #64748b;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .rank-1 { background: #fef3c7; color: #d97706; }
+        .rank-2 { background: #e2e8f0; color: #475569; }
+        .rank-3 { background: #ffedd5; color: #9a3412; }
+
+        .score-pill {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <h2>EduManage</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-users"></i> Students</a>
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="quiz.html" class="nav-item active"><i class="fa-solid fa-file-signature"></i> Quizzes</a>
+                <a href="settings.html" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar" style="visibility: hidden;">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="user-profile" id="userProfileDropdown">
+                    <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" id="userAvatar" alt="Profile">
+                    <span id="userNameDisplay">Loading...</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; margin-left: 4px;"></i>
+                </div>
+            </header>
+
+            <!-- Quiz List Section -->
+            <div id="quizListSection">
+                <div class="content-header">
+                    <div>
+                        <h1>Academic Quizzes</h1>
+                        <p>Challenge yourself and track your academic progress.</p>
+                    </div>
+                </div>
+
+                <div class="tabs" style="display: flex; gap: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color);">
+                    <button class="tab-btn active" id="quizzesTab" style="background: none; border: none; padding: 12px 0; font-weight: 600; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); cursor: pointer;">Available Quizzes</button>
+                    <button class="tab-btn" id="leaderboardTab" style="background: none; border: none; padding: 12px 0; font-weight: 500; color: #64748b; cursor: pointer;">Leaderboard</button>
+                </div>
+
+                <div id="quizzesContent">
+                    <div class="quiz-grid" id="quizGrid">
+                        <!-- Quizzes will be loaded here -->
+                        <div class="loading-spinner">Loading quizzes...</div>
+                    </div>
+                </div>
+
+                <div id="leaderboardContent" style="display: none;">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Student Name</th>
+                                    <th>Quiz</th>
+                                    <th>Score</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboardBody">
+                                <!-- Leaderboard data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Quiz Section -->
+            <div id="activeQuizSection" class="quiz-active-container">
+                <div class="quiz-header">
+                    <h2 id="currentQuizTitle">Quiz Title</h2>
+                    <span id="questionCounter">Question 1 of 10</span>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div id="questionContent">
+                    <h3 id="questionText">Question goes here?</h3>
+                    <div class="options-container" id="optionsContainer">
+                        <!-- Options will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="form-actions" style="margin-top: 32px; justify-content: space-between;">
+                    <button class="btn btn-secondary" id="prevBtn" disabled>Previous</button>
+                    <button class="btn btn-primary" id="nextBtn">Next</button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-container">
+                <div class="score-circle">
+                    <div class="score-value" id="finalScore">0</div>
+                    <div class="score-label" id="scoreLabel">out of 10</div>
+                </div>
+                <h2 id="resultTitle">Great Job!</h2>
+                <p id="resultMessage" style="color: #64748b; margin-bottom: 32px;">You've completed the quiz. Your results have been saved.</p>
+                <button class="btn btn-primary" onclick="location.reload()">Back to Quizzes</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/quiz.js"></script>
+    <script>
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('userNameDisplay').textContent = `${user.firstName} ${user.lastName}`;
+            document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=6366f1&color=fff`;
+        }
+
+        // Dark Mode check
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-theme');
+        }
+
+        // Dropdown toggle and Logout Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileDropdown = document.getElementById('userProfileDropdown');
+            const dropdownMenu = document.createElement('div');
+            dropdownMenu.id = 'dropdownMenu';
+            dropdownMenu.className = 'dropdown-menu';
+            dropdownMenu.style.cssText = 'display: none; position: absolute; top: 60px; right: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: var(--shadow-md); padding: 8px; min-width: 150px; z-index: 100;';
+            dropdownMenu.innerHTML = `
+                <button id="logoutBtn" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; cursor: pointer; color: var(--danger); font-family: inherit; font-size: 0.9rem; border-radius: 4px;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            `;
+            profileDropdown.parentNode.appendChild(dropdownMenu);
+            
+            profileDropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownMenu.style.display = dropdownMenu.style.display === 'none' ? 'block' : 'none';
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!profileDropdown.contains(e.target)) {
+                    dropdownMenu.style.display = 'none';
+                }
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+</body>
+</html>

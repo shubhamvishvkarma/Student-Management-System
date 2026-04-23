@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <!-- Diagnostic Script -->
+    <div id="api-diagnostic" style="position: fixed; top: 0; left: 0; right: 0; background: #fee2e2; color: #991b1b; padding: 8px; font-size: 12px; text-align: center; z-index: 9999; display: none;">
+        Backend connection failed. Checking...
+    </div>
+    <script>
+        async function checkConnection() {
+            const diag = document.getElementById('api-diagnostic');
+            try {
+                const res = await fetch('/api/quizzes');
+                if (res.ok) {
+                    console.log("Backend Connection Successful");
+                } else {
+                    diag.style.display = 'block';
+                    diag.textContent = `Backend error: ${res.status} ${res.statusText}`;
+                }
+            } catch (e) {
+                diag.style.display = 'block';
+                diag.textContent = `CRITICAL: Cannot connect to backend. Error: ${e.message}. Are you using http://localhost:8081?`;
+            }
+        }
+        checkConnection();
+    </script>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <h2>EduManage</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item active"><i class="fa-solid fa-users"></i> Students</a>
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="quiz.html" class="nav-item"><i class="fa-solid fa-file-signature"></i> Quizzes</a>
+                <a href="settings.html" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search students...">
+                </div>
+                <div class="user-profile" id="userProfileDropdown">
+                    <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" id="userAvatar" alt="Profile">
+                    <span id="userNameDisplay">Loading...</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; margin-left: 4px;"></i>
+                    
+                    <!-- Dropdown Menu -->
+                    <div class="dropdown-menu" id="dropdownMenu" style="display: none; position: absolute; top: 60px; right: 32px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: var(--shadow-md); padding: 8px; min-width: 150px;">
+                        <button id="logoutBtn" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; cursor: pointer; color: var(--danger); font-family: inherit; font-size: 0.9rem; border-radius: 4px;">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-header">
+                <div>
+                    <h1>Students Directory</h1>
+                    <p>Manage your college students' academic information.</p>
+                </div>
+                <button class="btn btn-primary" id="openAddModalBtn">
+                    <i class="fa-solid fa-plus"></i> Add Student
+                </button>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-container">
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background-color: rgba(99, 102, 241, 0.1); color: var(--primary-color);">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <div class="kpi-info">
+                        <h3>Total Students</h3>
+                        <p id="kpiTotalStudents">0</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background-color: rgba(16, 185, 129, 0.1); color: var(--success);">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="kpi-info">
+                        <h3>Average CGPA</h3>
+                        <p id="kpiAvgCgpa">0.00</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <div class="kpi-info">
+                        <h3>Departments</h3>
+                        <p id="kpiTotalDepts">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Email & Phone</th>
+                            <th>Department</th>
+                            <th>CGPA</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <!-- Data will be populated here via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Student Modal -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Student</h2>
+                <button class="close-modal" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="studentForm">
+                <input type="hidden" id="studentId">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" required placeholder="e.g. John">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" required placeholder="e.g. Doe">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="john.doe@example.com">
+                </div>
+                <div class="form-group" id="passwordGroup" style="display: none;">
+                    <label for="password">Password (Required for new students)</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+                <div style="display: flex; gap: 16px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="rollNumber">Roll Number</label>
+                        <input type="text" id="rollNumber" placeholder="CS24001">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" placeholder="+1 234 567 8900">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 16px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="enrollmentYear">Enrollment Year</label>
+                        <input type="number" id="enrollmentYear" min="2000" max="2100" placeholder="2024">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="cgpa">CGPA (Out of 10.0)</label>
+                        <input type="number" id="cgpa" step="0.01" min="0" max="10" placeholder="8.50">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <select id="department" required>
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Business">Business</option>
+                        <option value="Arts">Arts</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">Save Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
