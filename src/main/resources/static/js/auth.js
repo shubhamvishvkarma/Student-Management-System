@@ -36,13 +36,12 @@ if (loginForm) {
                 body: JSON.stringify({ email, password })
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || 'Login failed');
+                throw new Error(data.message || 'Login failed');
             }
 
-            const data = await response.json();
-            
             // Save user to local storage to simulate session
             localStorage.setItem('user', JSON.stringify(data));
             
@@ -63,16 +62,49 @@ if (registerForm) {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
-        const email = document.getElementById('email').value;
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
         const department = document.getElementById('department').value;
-        const password = document.getElementById('password').value;
-        const rollNumber = document.getElementById('rollNumber').value;
-        const phoneNumber = document.getElementById('phoneNumber').value;
-        const enrollmentYear = parseInt(document.getElementById('enrollmentYear').value);
-        const cgpa = parseFloat(document.getElementById('cgpa').value);
+        const password = document.getElementById('password').value.trim();
+        const rollNumber = document.getElementById('rollNumber').value.trim();
+        const phoneNumber = document.getElementById('phoneNumber').value.trim();
+        const enrollmentYearStr = document.getElementById('enrollmentYear').value.trim();
+        const cgpaStr = document.getElementById('cgpa').value.trim();
         const btn = document.getElementById('registerBtn');
+
+        // Client-side validation
+        if (!firstName) {
+            showError('First name is required!');
+            return;
+        }
+        if (!lastName) {
+            showError('Last name is required!');
+            return;
+        }
+        if (!email) {
+            showError('Email is required!');
+            return;
+        }
+        if (!department) {
+            showError('Please select a department!');
+            return;
+        }
+        if (!password) {
+            showError('Password is required!');
+            return;
+        }
+        if (!rollNumber) {
+            showError('Roll number is required!');
+            return;
+        }
+        if (!enrollmentYearStr || isNaN(parseInt(enrollmentYearStr))) {
+            showError('Valid enrollment year is required!');
+            return;
+        }
+
+        const enrollmentYear = parseInt(enrollmentYearStr);
+        const cgpa = cgpaStr ? parseFloat(cgpaStr) : null;
 
         try {
             btn.textContent = 'Creating account...';
@@ -84,10 +116,10 @@ if (registerForm) {
                 body: JSON.stringify({ firstName, lastName, email, department, password, rollNumber, phoneNumber, enrollmentYear, cgpa })
             });
 
-            const responseText = await response.text();
+            const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(responseText || 'Registration failed');
+                throw new Error(data.message || 'Registration failed');
             }
 
             // Successfully registered, now redirect to login

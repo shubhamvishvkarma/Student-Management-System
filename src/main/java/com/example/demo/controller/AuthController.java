@@ -24,9 +24,49 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        // Check if email already exists
+        // Validate required fields
+        if (request.getFirstName() == null || request.getFirstName().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("First name is required!"));
+        }
+        if (request.getLastName() == null || request.getLastName().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Last name is required!"));
+        }
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Email is required!"));
+        }
+        
+        // Validate email format
+        if (!isValidEmail(request.getEmail())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Invalid email format!"));
+        }
+        
+        if (request.getDepartment() == null || request.getDepartment().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Department is required!"));
+        }
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Password is required!"));
+        }
+        
+        // Validate password length
+        if (request.getPassword().length() < 6) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Password must be at least 6 characters!"));
+        }
+        
+        if (request.getRollNumber() == null || request.getRollNumber().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Roll number is required!"));
+        }
+        if (request.getEnrollmentYear() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Enrollment year is required!"));
+        }
+
+        // Check if email already exists (case-insensitive)
         if (studentRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Email is already registered!"));
+        }
+
+        // Check if roll number already exists
+        if (studentRepository.findByRollNumber(request.getRollNumber()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Roll number is already registered!"));
         }
 
         // Hash the password
@@ -45,17 +85,31 @@ public class AuthController {
                 request.getCgpa()
         );
 
-        studentRepository.save(newStudent);
+        try {
+            studentRepository.save(newStudent);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("Registration failed due to server error!"));
+        }
 
-        return ResponseEntity.ok("Registration successful!");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Registration successful!");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        // Validate required fields
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Email is required!"));
+        }
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Password is required!"));
+        }
+        
         Optional<Student> studentOpt = studentRepository.findByEmail(request.getEmail());
 
         if (studentOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Invalid email or password!"));
         }
 
         Student student = studentOpt.get();
@@ -77,7 +131,26 @@ public class AuthController {
             
             return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Invalid email or password!"));
+        }
+    }
+    
+    // Helper method to validate email format
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        return email.matches(emailRegex);
+    }
+    
+    // Inner class for consistent error responses
+    public static class ErrorResponse {
+        public String message;
+        
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+        
+        public String getMessage() {
+            return message;
         }
     }
 }
