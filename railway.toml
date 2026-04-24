@@ -1,9 +1,0 @@
-[build]
-builder = "nixpacks"
-
-[nixpacks]
-providers = ["gradle", "jvm"]
-
-[deploy]
-startCommand = "java -Dserver.port=$PORT -jar build/libs/demo-0.0.1-SNAPSHOT.jar"
-healthchecks = { enabled = true, path = "/" }
